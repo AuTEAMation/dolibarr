@@ -100,6 +100,82 @@ class MultiCurrencies extends DolibarrApi
 		return $obj_ret;
 	}
 
+
+
+  /**
+ * Create a new currency
+ *
+ * @param   array   $request_data   Request data
+ * @return  int                     ID of created currency
+ */
+/*
+public function post($request_data = null) 
+{
+/*     if (!DolibarrApiAccess::$user->rights->multicurrency->create) {
+        throw new RestException(401, "Insufficient rights to create a currency");
+    } */
+/*
+    $multicurrency = new MultiCurrency($this->db);
+    $multicurrency->id = $request_data['label'];
+    $multicurrency->code = $request_data['code_iso4217'];
+   // $multicurrency-> = $request_data['sign'];
+    //$multicurrency->decimals = $request_data['decimals'];
+    $multicurrency->rate->date_sync = $request_data['date_sync'];
+    $multicurrency->rate = $request_data['rate'];
+   // $multicurrency->active = $request_data['active'];
+    //$multicurrency->fk_user = DolibarrApiAccess::$user->id;
+
+    if ($multicurrency->create(DolibarrApiAccess::$user) < 0) {
+        throw new RestException(500, "Error creating currency", array_merge(array($multicurrency->error), $multicurrency->errors));
+    }
+
+    return $multicurrency->id;
+}
+
+*/
+
+
+
+public function post($request_data = null)
+{
+    /*if (!DolibarrApiAccess::$user->rights->multicurrency->create) {
+        throw new RestException(401, "Insufficient rights to create a currency");
+    }*/
+
+    $multicurrency = new MultiCurrency($this->db);
+    $multicurrency->id = $request_data['label'];
+    $multicurrency->code = $request_data['code_iso4217'];
+    //$multicurrency->sign = $request_data['sign'];
+    //$multicurrency->decimals = $request_data['decimals'];
+
+    // Create a new Rate object and set its properties
+    $rate = new CurrencyRate($this->db);
+    $rate->rate = $request_data['rate']['rate'];
+    $rate->date_sync = $request_data['rate']['date_sync'];
+
+    // Assign the Rate object to the MultiCurrency object
+    $multicurrency->rate = $rate;
+
+    //$multicurrency->active = $request_data['active'];
+    //$multicurrency->fk_user = DolibarrApiAccess::$user->id;
+
+    if ($multicurrency->create(DolibarrApiAccess::$user) < 0) {
+        throw new RestException(500, "Error creating currency", array_merge(array($multicurrency->error), $multicurrency->errors));
+    }
+
+    return $multicurrency->id;
+
+
+
+
+	
+}
+
+ 
+
+
+
+
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.PublicUnderscore
 	/**
 	 * Clean sensible object datas
